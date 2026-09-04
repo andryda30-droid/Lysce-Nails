@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#7C2E42">
+<title>Lysce Nails — Tarjeta de Fidelidad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FBF4EF; --blush:#F1D9DD; --rose:#B0455F; --rose-dark:#7C2E42;
+    --ink:#2B2320; --gold:#C9A24A; --line:#E4D2CC; --card:#FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; min-height:100vh; background:var(--cream); color:var(--ink);
+    font-family:'Manrope',sans-serif; display:flex; flex-direction:column; align-items:center;
+    padding:24px 16px 60px;
+  }
+  h1,h2,h3{font-family:'Fraunces',serif; font-weight:600; margin:0;}
+  .topbar{ width:100%; max-width:400px; display:flex; justify-content:flex-end; margin-bottom:6px;}
+  .topbar button{ background:none; border:none; color:#a98f89; font-size:12.5px; font-weight:600; cursor:pointer; text-decoration:underline;}
+
+  .card{
+    width:100%; max-width:400px; background:var(--card); border-radius:22px;
+    overflow:hidden; box-shadow:0 10px 30px rgba(124,46,66,.12); border:1px solid var(--line);
+  }
+  .card-header{
+    background:linear-gradient(135deg,var(--rose) 0%, var(--rose-dark) 100%);
+    color:#fff; padding:20px 22px 24px;
+  }
+  .card-header .brand{ font-family:'Fraunces',serif; font-size:20px; }
+  .card-header .sub{ font-size:12.5px; opacity:.85; margin-top:2px;}
+
+  .stamps{ display:flex; justify-content:space-between; padding:22px 20px 6px; }
+  .stamp{
+    width:52px; height:52px; border-radius:50%; border:2px solid var(--rose);
+    display:flex; align-items:center; justify-content:center; background:var(--blush);
+    font-size:22px; color:var(--rose);
+  }
+  .stamp.filled{ background:var(--rose); color:#fff; }
+  .stamp.reward{ border-color:var(--gold); }
+
+  .card-body{ padding:6px 22px 22px; }
+  .field-row{ display:flex; justify-content:space-between; align-items:baseline; padding:10px 0; border-bottom:1px solid var(--line); }
+  .field-row:last-child{ border-bottom:none; }
+  .field-row .label{ font-size:11.5px; font-weight:700; color:#9a827d; }
+  .field-row .val{ font-family:'Fraunces',serif; font-size:17px; text-align:right; }
+
+  .reward-msg{
+    margin-top:14px; background:#FBF0DC; border:1px solid var(--gold); color:#8a6a1f;
+    padding:10px 12px; border-radius:10px; font-size:13.5px; font-weight:600; text-align:center;
+  }
+
+  .qr-wrap{ display:flex; justify-content:center; padding:18px 0 22px; background:var(--card); }
+  .qr-wrap img{ padding:12px; background:#fff; border-radius:14px; border:1px solid var(--line); width:150px; height:150px; }
+
+  .search-box{
+    width:100%; max-width:400px; background:var(--card); border:1px solid var(--line);
+    border-radius:16px; padding:20px; margin-top:8px;
+  }
+  .search-box h3{ font-size:16px; color:var(--rose-dark); margin-bottom:12px;}
+  .field{ margin-bottom:10px; }
+  .field label{ display:block; font-size:12px; font-weight:600; color:#8a6f6a; margin-bottom:5px;}
+  .field input{
+    width:100%; padding:11px 12px; border:1px solid var(--line); border-radius:10px;
+    font-family:'Manrope'; font-size:14.5px; background:#fffdfb; color:var(--ink);
+  }
+  button.primary{
+    width:100%; padding:12px; border:none; border-radius:10px; background:var(--rose);
+    color:#fff; font-weight:700; font-size:14.5px; cursor:pointer; margin-top:4px;
+  }
+  .empty{ text-align:center; color:#a98f89; font-size:13.5px; padding:10px 0;}
+  .staff-panel{ width:100%; max-width:400px; margin-top:14px; }
+  .staff-panel .client-row{
+    display:flex; justify-content:space-between; align-items:center; background:var(--card);
+    border:1px solid var(--line); border-radius:12px; padding:10px 14px; margin-bottom:8px;
+  }
+  .staff-panel .client-row .name{ font-weight:700; font-size:14px; }
+  .staff-panel .client-row .sub{ font-size:12px; color:#9a827d; }
+  .staff-panel .client-row .actions button{
+    border:none; border-radius:8px; padding:6px 10px; font-size:12.5px; font-weight:700; cursor:pointer; margin-left:4px;
+  }
+  .btn-stamp{ background:var(--rose); color:#fff; }
+  .btn-reset{ background:var(--gold); color:#fff; }
+  .note{ max-width:400px; font-size:12px; color:#a98f89; text-align:center; margin-top:16px; line-height:1.5; }
+  .err{ max-width:400px; background:#FDEDEC; border:1px solid #E4A9A2; color:#8a2f26; padding:14px; border-radius:12px; font-size:13.5px; }
+</style>
+</head>
+<body>
+
+<div class="topbar"><button id="toggleModeBtn">Modo personal</button></div>
+<div id="app"><div class="empty">Cargando…</div></div>
+
+<script>
+const REWARD_AT = 5;
+const STAFF_PIN = "1234"; // cámbialo aquí si quieres otro PIN
+let clientes = []; // {telefono, nombre, sellos, canjes}
+let mode = 'cliente'; // 'cliente' | 'staff'
+let ready = false;
+
+function showFatalError(e){
+  document.getElementById('app').innerHTML =
+    '<div class="err">No se pudo cargar la tarjeta en este navegador. Abre el link publicado (no el archivo descargado) para que funcione. Detalle: ' +
+    (e && e.message ? e.message : 'desconocido') + '</div>';
+}
+
+let params, telFromUrl = '';
+try{
+  params = new URLSearchParams(location.search);
+  telFromUrl = params.get('tel') || '';
+}catch(e){}
+
+async function load(){
+  try{
+    const r = await window.storage.get('tarjetas', true);
+    clientes = r ? JSON.parse(r.value) : [];
+  }catch(e){ clientes = []; }
+  ready = true;
+  render();
+}
+async function save(){
+  try{ await window.storage.set('tarjetas', JSON.stringify(clientes), true); }catch(e){}
+}
+
+document.getElementById('toggleModeBtn').addEventListener('click', ()=>{
+  if(mode==='cliente'){
+    const pin = prompt('PIN de personal:');
+    if(pin===STAFF_PIN){ mode='staff'; document.getElementById('toggleModeBtn').textContent='Modo clienta'; render(); }
+    else if(pin!==null){ alert('PIN incorrecto'); }
+  } else {
+    mode='cliente'; document.getElementById('toggleModeBtn').textContent='Modo personal'; render();
+  }
+});
+
+function findByTel(tel){ return clientes.find(c=>c.telefono===tel); }
+
+function render(){
+  try{
+    const app = document.getElementById('app');
+    if(!ready){ app.innerHTML = '<div class="empty">Cargando…</div>'; return; }
+    if(mode==='staff') return renderStaff(app);
+    return renderCliente(app);
+  }catch(e){ showFatalError(e); }
+}
+
+function renderCliente(app){
+  const cliente = telFromUrl ? findByTel(telFromUrl) : null;
+  if(cliente){
+    return renderCard(app, cliente);
+  }
+  app.innerHTML = `
+    <div class="search-box">
+      <h3>Consulta tu tarjeta</h3>
+      <div class="field"><label>Número de teléfono</label><input id="telInput" type="text" placeholder="0412-0000000"></div>
+      <button class="primary" id="buscarBtn">Ver mi tarjeta</button>
+    </div>
+    <p class="note">¿Primera vez? Pide a tu esteticista que active tu tarjeta.</p>
+  `;
+  document.getElementById('buscarBtn').addEventListener('click', ()=>{
+    const tel = document.getElementById('telInput').value.trim();
+    if(!tel) return;
+    const c = findByTel(tel);
+    if(!c){ alert('No encontramos una tarjeta con ese número. Pide a tu esteticista que la active.'); return; }
+    try{ history.replaceState(null,'','?tel='+encodeURIComponent(tel)); }catch(e){}
+    telFromUrl = tel;
+    render();
+  });
+}
+
+function renderCard(app, cliente){
+  const filled = cliente.sellos;
+  const gotReward = filled >= REWARD_AT;
+  let stampsHtml = '';
+  for(let i=0;i<REWARD_AT;i++){
+    const isLast = i===REWARD_AT-1;
+    stampsHtml += `<div class="stamp ${i<filled?'filled':''} ${isLast?'reward':''}">${i<filled?'&#10003;':(isLast?'&#9733;':'')}</div>`;
+  }
+  let url = '';
+  try{ url = location.origin + location.pathname + '?tel=' + encodeURIComponent(cliente.telefono); }catch(e){ url = cliente.telefono; }
+  const qrImg = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&color=124-46-66&data=' + encodeURIComponent(url);
+
+  app.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <div class="brand">Lysce Nails</div>
+        <div class="sub">Tarjeta de fidelidad</div>
+      </div>
+      <div class="stamps">${stampsHtml}</div>
+      <div class="card-body">
+        <div class="field-row"><div class="label">TITULAR</div><div class="val">${cliente.nombre}</div></div>
+        <div class="field-row"><div class="label">SELLOS</div><div class="val">${filled} / ${REWARD_AT}</div></div>
+        ${gotReward ? `<div class="reward-msg">Servicio gratis disponible. Muestra esta pantalla a tu esteticista.</div>` : ''}
+      </div>
+      <div class="qr-wrap"><img src="${qrImg}" alt="Código QR de tu tarjeta"></div>
+    </div>
+    <p class="note">Guarda esta página: toca compartir y "Agregar a pantalla de inicio" para tenerla como una app, funciona igual en iPhone y Android.</p>
+  `;
+}
+
+function renderStaff(app){
+  app.innerHTML = `
+    <div class="search-box">
+      <h3>Activar nueva tarjeta</h3>
+      <div class="field"><label>Nombre de la clienta</label><input id="nuevoNombre" type="text"></div>
+      <div class="field"><label>Teléfono</label><input id="nuevoTel" type="text" placeholder="0412-0000000"></div>
+      <button class="primary" id="crearBtn">Activar tarjeta</button>
+    </div>
+    <div class="staff-panel">
+      <h3 style="color:var(--rose-dark); font-size:16px; margin:16px 0 10px;">Tarjetas activas</h3>
+      <div id="listaStaff"></div>
+    </div>
+  `;
+  document.getElementById('crearBtn').addEventListener('click', async ()=>{
+    const nombre = document.getElementById('nuevoNombre').value.trim();
+    const tel = document.getElementById('nuevoTel').value.trim();
+    if(!nombre || !tel) return alert('Completa nombre y teléfono');
+    if(findByTel(tel)) return alert('Ya existe una tarjeta con ese teléfono');
+    clientes.push({ telefono: tel, nombre, sellos: 0, canjes: 0 });
+    await save();
+    render();
+  });
+
+  const lista = document.getElementById('listaStaff');
+  if(clientes.length===0){ lista.innerHTML = '<div class="empty">Aún no hay tarjetas activas</div>'; return; }
+  lista.innerHTML = clientes.map(c=>`
+    <div class="client-row">
+      <div>
+        <div class="name">${c.nombre}</div>
+        <div class="sub">${c.telefono} · ${c.sellos}/${REWARD_AT} sellos${c.canjes?(' · '+c.canjes+' canje(s)'):''}</div>
+      </div>
+      <div class="actions">
+        ${c.sellos >= REWARD_AT
+          ? `<button class="btn-reset" data-tel="${c.telefono}" data-action="canjear">Canjear</button>`
+          : `<button class="btn-stamp" data-tel="${c.telefono}" data-action="sellar">+ Sello</button>`}
+      </div>
+    </div>
+  `).join('');
+
+  lista.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const c = findByTel(btn.dataset.tel);
+      if(!c) return;
+      if(btn.dataset.action==='sellar'){ c.sellos = Math.min(REWARD_AT, c.sellos+1); }
+      if(btn.dataset.action==='canjear'){ c.sellos = 0; c.canjes = (c.canjes||0)+1; }
+      await save();
+      render();
+    });
+  });
+}
+
+load().catch(showFatalError);
+</script>
+</body>
+</html>
