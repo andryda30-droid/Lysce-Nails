@@ -113,16 +113,19 @@ try{
   telFromUrl = params.get('tel') || '';
 }catch(e){}
 
+const DB_URL = "https://lysce-nails-default-rtdb.firebaseio.com";
+
 async function load(){
   try{
-    const r = await window.storage.get('tarjetas', true);
-    clientes = r ? JSON.parse(r.value) : [];
+    const res = await fetch(DB_URL + '/tarjetas.json');
+    const r = await res.json();
+    clientes = r || [];
   }catch(e){ clientes = []; }
   ready = true;
   render();
 }
 async function save(){
-  try{ await window.storage.set('tarjetas', JSON.stringify(clientes), true); }catch(e){}
+  try{ await fetch(DB_URL + '/tarjetas.json', { method:'PUT', body: JSON.stringify(clientes) }); }catch(e){}
 }
 
 document.getElementById('toggleModeBtn').addEventListener('click', ()=>{

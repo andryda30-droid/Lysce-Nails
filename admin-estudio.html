@@ -129,24 +129,35 @@ let movimientos = []; // {id, type:'ingreso'|'egreso', fecha, monto, trabajadora
 let clientes = [];    // {id, nombre, telefono, notas}
 let ready = false;
 
+const DB_URL = "https://lysce-nails-default-rtdb.firebaseio.com";
+
+async function fbGet(path){
+  const res = await fetch(DB_URL + '/' + path + '.json');
+  if(!res.ok) throw new Error('No se pudo conectar a la base de datos');
+  return res.json();
+}
+async function fbPut(path, data){
+  await fetch(DB_URL + '/' + path + '.json', { method:'PUT', body: JSON.stringify(data) });
+}
+
 async function loadData(){
   try{
-    const m = await window.storage.get('movimientos', false);
-    movimientos = m ? JSON.parse(m.value) : [];
-  }catch(e){ movimientos = []; }
+    const m = await fbGet('movimientos');
+    movimientos = m || [];
+  }catch(e){ movimientos = []; document.getElementById('main').innerHTML = '<div class="empty">No se pudo conectar a la base de datos. Revisa tu conexión a internet e intenta de nuevo.</div>'; ready = true; return; }
   try{
-    const c = await window.storage.get('clientes', false);
-    clientes = c ? JSON.parse(c.value) : [];
+    const c = await fbGet('clientes');
+    clientes = c || [];
   }catch(e){ clientes = []; }
   ready = true;
   render();
 }
 
 async function saveMovimientos(){
-  await window.storage.set('movimientos', JSON.stringify(movimientos), false);
+  await fbPut('movimientos', movimientos);
 }
 async function saveClientes(){
-  await window.storage.set('clientes', JSON.stringify(clientes), false);
+  await fbPut('clientes', clientes);
 }
 
 function fmt(n){ return '$' + Number(n).toFixed(2); }
