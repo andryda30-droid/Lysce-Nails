@@ -8,50 +8,30 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --cream:#FBF4EF;
-    --blush:#F1D9DD;
-    --rose:#B0455F;
-    --rose-dark:#7C2E42;
-    --ink:#2B2320;
-    --gold:#B98A3E;
-    --line:#E4D2CC;
-    --ok:#4C7A5E;
-    --bad:#B0455F;
-    --card:#FFFFFF;
+    --cream:#FBF4EF; --blush:#F1D9DD; --rose:#B0455F; --rose-dark:#7C2E42;
+    --ink:#2B2320; --gold:#B98A3E; --line:#E4D2CC; --ok:#4C7A5E; --bad:#B0455F; --card:#FFFFFF;
   }
   *{box-sizing:border-box;}
-  body{
-    margin:0;
-    background:var(--cream);
-    color:var(--ink);
-    font-family:'Manrope',sans-serif;
-    -webkit-font-smoothing:antialiased;
-  }
+  body{ margin:0; background:var(--cream); color:var(--ink); font-family:'Manrope',sans-serif; -webkit-font-smoothing:antialiased; }
   h1,h2,h3{ font-family:'Fraunces',serif; font-weight:600; margin:0; }
-  header{
-    padding:28px 20px 22px;
-    background:linear-gradient(180deg,var(--blush) 0%, var(--cream) 100%);
-    border-bottom:1px solid var(--line);
-  }
+  header{ padding:28px 20px 22px; background:linear-gradient(180deg,var(--blush) 0%, var(--cream) 100%); border-bottom:1px solid var(--line); }
   header h1{ font-size:26px; color:var(--rose-dark); letter-spacing:.2px;}
   header p{ margin:4px 0 0; color:#8a6f6a; font-size:14px;}
-  nav{
-    display:flex; gap:6px; padding:10px 16px 0; max-width:760px; margin:0 auto;
-    overflow-x:auto;
-  }
-  nav button{
-    border:none; background:transparent; padding:10px 14px; font-family:'Manrope';
-    font-size:14.5px; font-weight:600; color:#9a827d; border-radius:10px 10px 0 0;
-    cursor:pointer; white-space:nowrap; border-bottom:2px solid transparent;
-  }
+  nav{ display:flex; gap:6px; padding:10px 16px 0; max-width:760px; margin:0 auto; overflow-x:auto; }
+  nav button{ border:none; background:transparent; padding:10px 14px; font-family:'Manrope'; font-size:14.5px; font-weight:600; color:#9a827d; border-radius:10px 10px 0 0; cursor:pointer; white-space:nowrap; border-bottom:2px solid transparent; }
   nav button.active{ color:var(--rose-dark); border-bottom:2px solid var(--rose); }
   main{ max-width:760px; margin:0 auto; padding:20px 16px 60px; }
-  .view{ display:none; } .view.active{ display:block; }
+
+  .tasa-box{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin-bottom:18px; }
+  .tasa-box label{ display:block; font-size:12px; font-weight:600; color:#8a6f6a; margin-bottom:6px;}
+  .tasa-box .row2{ display:grid; grid-template-columns:1fr auto; gap:8px; }
+  .tasa-box input{ padding:9px 10px; border:1px solid var(--line); border-radius:9px; font-size:14px; }
+  .tasa-box button{ padding:9px 14px; border:none; border-radius:9px; background:var(--rose-dark); color:#fff; font-weight:700; font-size:13px;}
 
   .grid-stats{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:18px;}
   .stat{ background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; }
-  .stat .label{ font-size:12.5px; color:#9a827d; font-weight:600; text-transform:none;}
-  .stat .value{ font-family:'Fraunces',serif; font-size:24px; margin-top:4px; }
+  .stat .label{ font-size:12.5px; color:#9a827d; font-weight:600;}
+  .stat .value{ font-family:'Fraunces',serif; font-size:21px; margin-top:4px; line-height:1.3;}
   .stat.balance .value{ color:var(--rose-dark); }
   .stat.ok .value{ color:var(--ok); }
   .stat.bad .value{ color:var(--bad); }
@@ -60,7 +40,7 @@
 
   .worker-row{ display:flex; justify-content:space-between; align-items:center; background:var(--card); border:1px solid var(--line); padding:12px 14px; border-radius:12px; margin-bottom:8px;}
   .worker-row .name{ font-weight:600; font-size:14.5px;}
-  .worker-row .amt{ font-family:'Fraunces',serif; font-size:17px; color:var(--rose-dark);}
+  .worker-row .amt{ font-family:'Fraunces',serif; font-size:15px; color:var(--rose-dark); text-align:right;}
   .bar-bg{ height:6px; background:var(--blush); border-radius:4px; margin-top:6px; overflow:hidden;}
   .bar-fill{ height:100%; background:var(--rose); }
 
@@ -68,34 +48,27 @@
   form h3{ font-size:16px; margin-bottom:12px; color:var(--rose-dark);}
   .field{ margin-bottom:12px; }
   .field label{ display:block; font-size:12.5px; font-weight:600; color:#8a6f6a; margin-bottom:5px;}
-  .field input, .field select{
-    width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px;
-    font-family:'Manrope'; font-size:14.5px; background:#fffdfb; color:var(--ink);
-  }
+  .field input, .field select{ width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px; font-family:'Manrope'; font-size:14.5px; background:#fffdfb; color:var(--ink); }
   .row2{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  button.primary{
-    width:100%; padding:12px; border:none; border-radius:10px; background:var(--rose);
-    color:#fff; font-family:'Manrope'; font-weight:700; font-size:14.5px; cursor:pointer;
-    margin-top:4px;
-  }
+  button.primary{ width:100%; padding:12px; border:none; border-radius:10px; background:var(--rose); color:#fff; font-family:'Manrope'; font-weight:700; font-size:14.5px; cursor:pointer; margin-top:4px; }
   button.primary:active{ background:var(--rose-dark); }
+  button.secondary{ width:100%; padding:10px; border:1px dashed var(--rose); border-radius:10px; background:transparent; color:var(--rose-dark); font-weight:700; font-size:13.5px; cursor:pointer; margin-top:4px; }
 
-  .list-item{
-    display:flex; justify-content:space-between; align-items:flex-start;
-    background:var(--card); border:1px solid var(--line); border-radius:12px;
-    padding:12px 14px; margin-bottom:8px;
-  }
+  .service-row{ background:var(--blush); border-radius:10px; padding:10px; margin-bottom:8px; }
+  .svc-remove{ background:none; border:none; color:#8a6f6a; font-size:12px; text-decoration:underline; margin-top:6px; padding:0; cursor:pointer; }
+  .total-row{ display:flex; justify-content:space-between; align-items:center; background:#fff; border:1px solid var(--line); border-radius:10px; padding:10px 12px; margin:6px 0 12px; font-weight:700; color:var(--rose-dark); font-size:14.5px;}
+
+  .list-item{ display:flex; justify-content:space-between; align-items:flex-start; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-bottom:8px; }
+  .list-item .left{ flex:1; padding-right:8px; }
   .list-item .left .title{ font-weight:700; font-size:14.5px;}
   .list-item .left .sub{ font-size:12.5px; color:#9a827d; margin-top:2px;}
   .list-item .right{ text-align:right; }
-  .list-item .right .amt{ font-family:'Fraunces',serif; font-size:16px;}
+  .list-item .right .amt{ font-family:'Fraunces',serif; font-size:15px; line-height:1.3;}
   .amt.income{ color:var(--ok); }
   .amt.expense{ color:var(--bad); }
-  .del{ background:none; border:none; color:#c79a94; font-size:12px; cursor:pointer; margin-top:4px; }
+  .del{ background:none; border:none; color:#c79a94; font-size:12px; cursor:pointer; margin-top:4px; padding:0; }
 
-  .client-card{
-    background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-bottom:8px;
-  }
+  .client-card{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-bottom:8px; }
   .client-card .title{ font-weight:700; font-size:14.5px; }
   .client-card .sub{ font-size:12.5px; color:#9a827d; margin-top:2px; }
   .client-card .visits{ margin-top:6px; font-size:12.5px; color:var(--rose-dark); font-weight:600;}
@@ -118,16 +91,16 @@
   <button class="tab-btn" data-view="clientes">Clientes</button>
 </nav>
 
-<main id="main">
-  <div class="loading">Cargando…</div>
-</main>
+<main id="main"><div class="loading">Cargando…</div></main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.10/dayjs.min.js"></script>
 <script>
 const WORKERS = ["Yo", "Trabajadora 1", "Trabajadora 2"];
-let movimientos = []; // {id, type:'ingreso'|'egreso', fecha, monto, trabajadora, servicio, cliente, categoria, descripcion}
-let clientes = [];    // {id, nombre, telefono, notas}
+const TIPOS_SERVICIO = ["Uñas","Cejas","Pestañas","Otro"];
+let movimientos = [];
+let clientes = [];
+let tasaBs = 0;
 let ready = false;
+let rowCounter = 0;
 
 const DB_URL = "https://lysce-nails-default-rtdb.firebaseio.com";
 
@@ -145,26 +118,22 @@ async function loadData(){
     const m = await fbGet('movimientos');
     movimientos = m || [];
   }catch(e){ movimientos = []; document.getElementById('main').innerHTML = '<div class="empty">No se pudo conectar a la base de datos. Revisa tu conexión a internet e intenta de nuevo.</div>'; ready = true; return; }
-  try{
-    const c = await fbGet('clientes');
-    clientes = c || [];
-  }catch(e){ clientes = []; }
+  try{ const c = await fbGet('clientes'); clientes = c || []; }catch(e){ clientes = []; }
+  try{ const cfg = await fbGet('config'); tasaBs = (cfg && cfg.tasaBs) || 0; }catch(e){ tasaBs = 0; }
   ready = true;
   render();
 }
+async function saveMovimientos(){ await fbPut('movimientos', movimientos); }
+async function saveClientes(){ await fbPut('clientes', clientes); }
+async function saveTasa(){ await fbPut('config', { tasaBs }); }
 
-async function saveMovimientos(){
-  await fbPut('movimientos', movimientos);
-}
-async function saveClientes(){
-  await fbPut('clientes', clientes);
-}
-
-function fmt(n){ return '$' + Number(n).toFixed(2); }
+function fmtUSD(n){ return '$' + Number(n).toFixed(2); }
+function fmtBsAmt(n){ return 'Bs ' + (Number(n)*tasaBs).toLocaleString('es-VE',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function amtStr(n){ return fmtUSD(n) + (tasaBs>0 ? ' <br><span style="font-size:12px;opacity:.75;">'+fmtBsAmt(n)+'</span>' : ''); }
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function findCliente(nombre){ return clientes.find(c=>c.nombre.toLowerCase()===String(nombre||'').toLowerCase()); }
 
 let currentView = 'resumen';
-
 function switchView(v){
   currentView = v;
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
@@ -181,43 +150,123 @@ function render(){
   if(currentView==='clientes') return renderClientes(main);
 }
 
+function tasaBoxHtml(){
+  return `
+    <div class="tasa-box">
+      <label>Tasa del día (Bs por $1)</label>
+      <div class="row2">
+        <input type="number" step="0.01" id="tasaInput" value="${tasaBs||''}" placeholder="Ej. 40.50">
+        <button id="guardarTasaBtn" type="button">Guardar</button>
+      </div>
+    </div>`;
+}
+function bindTasaBox(){
+  document.getElementById('guardarTasaBtn').addEventListener('click', async ()=>{
+    tasaBs = parseFloat(document.getElementById('tasaInput').value) || 0;
+    await saveTasa();
+    render();
+  });
+}
+
+function servicioLabel(m){
+  if(m.servicios && m.servicios.length){
+    return m.servicios.map(s => s.tipo + (s.tipo==='Otro' && s.descripcion ? ' ('+s.descripcion+')' : '') + ' ' + fmtUSD(s.monto)).join(', ');
+  }
+  return m.servicio || 'Servicio';
+}
+
+function monthLabel(key){
+  const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const [y,m] = key.split('-');
+  return meses[parseInt(m,10)-1] + ' ' + y;
+}
+function balancesPorMes(){
+  const map = {};
+  movimientos.forEach(m=>{
+    if(!m.fecha) return;
+    const key = m.fecha.slice(0,7);
+    if(!map[key]) map[key] = { ingresos:0, egresos:0 };
+    if(m.type==='ingreso') map[key].ingresos += m.monto;
+    else map[key].egresos += m.monto;
+  });
+  return Object.keys(map).sort().reverse().map(key=>({ key, ...map[key], balance: map[key].ingresos - map[key].egresos }));
+}
+
 function renderResumen(main){
   const totalIn = movimientos.filter(m=>m.type==='ingreso').reduce((s,m)=>s+m.monto,0);
   const totalOut = movimientos.filter(m=>m.type==='egreso').reduce((s,m)=>s+m.monto,0);
   const balance = totalIn - totalOut;
-
-  const porTrabajadora = WORKERS.map(w=>({
-    nombre:w,
-    total: movimientos.filter(m=>m.type==='ingreso' && m.trabajadora===w).reduce((s,m)=>s+m.monto,0)
-  }));
+  const porTrabajadora = WORKERS.map(w=>({ nombre:w, total: movimientos.filter(m=>m.type==='ingreso' && m.trabajadora===w).reduce((s,m)=>s+m.monto,0) }));
   const maxW = Math.max(1, ...porTrabajadora.map(w=>w.total));
 
   main.innerHTML = `
+    ${tasaBoxHtml()}
     <div class="grid-stats">
-      <div class="stat ok"><div class="label">Ingresos totales</div><div class="value">${fmt(totalIn)}</div></div>
-      <div class="stat bad"><div class="label">Egresos totales</div><div class="value">${fmt(totalOut)}</div></div>
-      <div class="stat balance" style="grid-column:1/3;"><div class="label">Balance neto</div><div class="value">${fmt(balance)}</div></div>
+      <div class="stat ok"><div class="label">Ingresos totales</div><div class="value">${amtStr(totalIn)}</div></div>
+      <div class="stat bad"><div class="label">Egresos totales</div><div class="value">${amtStr(totalOut)}</div></div>
+      <div class="stat balance" style="grid-column:1/3;"><div class="label">Balance neto</div><div class="value">${amtStr(balance)}</div></div>
     </div>
     <div class="section-title">Ingresos por trabajadora</div>
     ${porTrabajadora.map(w=>`
       <div class="worker-row">
         <div>
           <div class="name">${w.nombre}</div>
-          <div class="bar-bg" style="width:160px;"><div class="bar-fill" style="width:${(w.total/maxW*100)||0}%"></div></div>
+          <div class="bar-bg" style="width:140px;"><div class="bar-fill" style="width:${(w.total/maxW*100)||0}%"></div></div>
         </div>
-        <div class="amt">${fmt(w.total)}</div>
+        <div class="amt">${amtStr(w.total)}</div>
+      </div>`).join('')}
+    <div class="section-title">Balance mensual</div>
+    ${balancesPorMes().length===0 ? '<div class="empty">Aún no hay movimientos para calcular un balance</div>' :
+      balancesPorMes().map(b=>`
+      <div class="list-item">
+        <div class="left">
+          <div class="title">${monthLabel(b.key)}</div>
+          <div class="sub">Ingresos: ${fmtUSD(b.ingresos)} · Egresos: ${fmtUSD(b.egresos)}</div>
+        </div>
+        <div class="right"><div class="amt ${b.balance>=0?'income':'expense'}">${amtStr(b.balance)}</div></div>
       </div>`).join('')}
     <div class="section-title">Movimientos recientes</div>
     ${movimientos.length===0 ? '<div class="empty">Aún no hay movimientos registrados</div>' :
       movimientos.slice().sort((a,b)=>b.fecha.localeCompare(a.fecha)).slice(0,6).map(m=>`
       <div class="list-item">
         <div class="left">
-          <div class="title">${m.type==='ingreso' ? (m.servicio||'Servicio') : (m.categoria||'Egreso')}</div>
-          <div class="sub">${m.fecha}${m.type==='ingreso' && m.trabajadora ? ' · '+m.trabajadora : ''}</div>
+          <div class="title">${m.type==='ingreso' ? (m.cliente||'Ingreso') : (m.categoria||'Egreso')}</div>
+          <div class="sub">${m.fecha}${m.type==='ingreso' ? ' · '+m.trabajadora+' · '+servicioLabel(m) : (m.descripcion?' · '+m.descripcion:'')}</div>
         </div>
-        <div class="right"><div class="amt ${m.type==='ingreso'?'income':'expense'}">${m.type==='ingreso'?'+':'-'}${fmt(m.monto)}</div></div>
+        <div class="right"><div class="amt ${m.type==='ingreso'?'income':'expense'}">${m.type==='ingreso'?'+':'-'}${amtStr(m.monto)}</div></div>
       </div>`).join('')}
   `;
+  bindTasaBox();
+}
+
+function addServiceRow(){
+  const container = document.getElementById('serviceRows');
+  const div = document.createElement('div');
+  div.className = 'service-row';
+  div.innerHTML = `
+    <div class="row2">
+      <select class="svc-tipo">${TIPOS_SERVICIO.map(t=>`<option value="${t}">${t}</option>`).join('')}</select>
+      <input type="number" step="0.01" class="svc-monto" placeholder="Monto $">
+    </div>
+    <input type="text" class="svc-desc" placeholder="Describe qué se llevó" style="display:none; margin-top:6px;">
+    <button type="button" class="svc-remove">Quitar este servicio</button>
+  `;
+  container.appendChild(div);
+  const tipoSel = div.querySelector('.svc-tipo');
+  const descInput = div.querySelector('.svc-desc');
+  tipoSel.addEventListener('change', ()=>{ descInput.style.display = tipoSel.value==='Otro' ? 'block':'none'; });
+  div.querySelector('.svc-monto').addEventListener('input', updateIngresoTotal);
+  div.querySelector('.svc-remove').addEventListener('click', ()=>{ div.remove(); updateIngresoTotal(); updateRemoveButtons(); });
+  updateRemoveButtons();
+}
+function updateRemoveButtons(){
+  const rows = document.querySelectorAll('#serviceRows .service-row');
+  rows.forEach(r=>{ r.querySelector('.svc-remove').style.display = rows.length>1 ? 'inline-block':'none'; });
+}
+function updateIngresoTotal(){
+  let total=0;
+  document.querySelectorAll('#serviceRows .svc-monto').forEach(inp=>{ total += parseFloat(inp.value)||0; });
+  document.getElementById('ingresoTotalDisplay').innerHTML = amtStr(total);
 }
 
 function renderIngresos(main){
@@ -226,42 +275,62 @@ function renderIngresos(main){
       <h3>Registrar ingreso</h3>
       <div class="field"><label>Fecha</label><input type="date" name="fecha" required></div>
       <div class="row2">
-        <div class="field"><label>Servicio</label><input type="text" name="servicio" placeholder="Ej. Manicure" required></div>
-        <div class="field"><label>Monto</label><input type="number" step="0.01" name="monto" placeholder="0.00" required></div>
+        <div class="field"><label>Nombre de la clienta</label><input type="text" id="nombreCliente" list="listaNombres" required></div>
+        <div class="field"><label>Cédula</label><input type="text" id="cedulaCliente" placeholder="V-00000000"></div>
       </div>
-      <div class="row2">
-        <div class="field"><label>Trabajadora</label>
-          <select name="trabajadora">${WORKERS.map(w=>`<option>${w}</option>`).join('')}</select>
-        </div>
-        <div class="field"><label>Cliente (opcional)</label><input type="text" name="cliente" placeholder="Nombre"></div>
-      </div>
+      <datalist id="listaNombres">${clientes.map(c=>`<option value="${c.nombre}">`).join('')}</datalist>
+      <div class="field"><label>Trabajadora</label><select name="trabajadora">${WORKERS.map(w=>`<option>${w}</option>`).join('')}</select></div>
+      <label style="display:block; font-size:12.5px; font-weight:600; color:#8a6f6a; margin-bottom:6px;">Servicios realizados</label>
+      <div id="serviceRows"></div>
+      <button type="button" class="secondary" id="addServiceBtn">+ Agregar otro servicio</button>
+      <div class="total-row"><span>Total</span><span id="ingresoTotalDisplay">${amtStr(0)}</span></div>
       <button class="primary" type="submit">Guardar ingreso</button>
     </form>
     <div class="section-title">Historial de ingresos</div>
     <div id="listaIngresos"></div>
   `;
+  addServiceRow();
+  document.getElementById('addServiceBtn').addEventListener('click', addServiceRow);
+
+  document.getElementById('nombreCliente').addEventListener('input', e=>{
+    const match = findCliente(e.target.value);
+    if(match) document.getElementById('cedulaCliente').value = match.cedula || '';
+  });
+
   const ingresos = movimientos.filter(m=>m.type==='ingreso').sort((a,b)=>b.fecha.localeCompare(a.fecha));
   document.getElementById('listaIngresos').innerHTML = ingresos.length===0 ? '<div class="empty">Sin ingresos aún</div>' :
     ingresos.map(m=>`
       <div class="list-item">
         <div class="left">
-          <div class="title">${m.servicio}</div>
-          <div class="sub">${m.fecha} · ${m.trabajadora}${m.cliente?' · '+m.cliente:''}</div>
+          <div class="title">${m.cliente || 'Sin nombre'}</div>
+          <div class="sub">${m.fecha} · ${m.trabajadora}${m.cedula?' · C.I. '+m.cedula:''}<br>${servicioLabel(m)}</div>
           <button class="del" data-id="${m.id}">Eliminar</button>
         </div>
-        <div class="right"><div class="amt income">+${fmt(m.monto)}</div></div>
+        <div class="right"><div class="amt income">+${amtStr(m.monto)}</div></div>
       </div>`).join('');
 
   document.getElementById('formIngreso').addEventListener('submit', async e=>{
     e.preventDefault();
     const f = new FormData(e.target);
-    movimientos.push({
-      id: uid(), type:'ingreso',
-      fecha: f.get('fecha'), servicio: f.get('servicio'),
-      monto: parseFloat(f.get('monto')), trabajadora: f.get('trabajadora'),
-      cliente: f.get('cliente')||''
+    const nombre = document.getElementById('nombreCliente').value.trim();
+    const cedula = document.getElementById('cedulaCliente').value.trim();
+    const servicios = [];
+    document.querySelectorAll('#serviceRows .service-row').forEach(row=>{
+      const tipo = row.querySelector('.svc-tipo').value;
+      const monto = parseFloat(row.querySelector('.svc-monto').value) || 0;
+      const descripcion = row.querySelector('.svc-desc').value.trim();
+      if(monto > 0) servicios.push({ tipo, monto, descripcion: tipo==='Otro' ? descripcion : '' });
     });
+    if(servicios.length===0){ alert('Agrega al menos un servicio con monto'); return; }
+    const total = servicios.reduce((s,x)=>s+x.monto,0);
+
+    movimientos.push({ id: uid(), type:'ingreso', fecha: f.get('fecha'), cliente: nombre, cedula, trabajadora: f.get('trabajadora'), servicios, monto: total });
     await saveMovimientos();
+
+    let cli = findCliente(nombre);
+    if(!cli){ clientes.push({ id: uid(), nombre, cedula, telefono:'', notas:'' }); await saveClientes(); }
+    else if(cedula && !cli.cedula){ cli.cedula = cedula; await saveClientes(); }
+
     e.target.reset();
     render();
   });
@@ -281,12 +350,9 @@ function renderEgresos(main){
       <div class="field"><label>Fecha</label><input type="date" name="fecha" required></div>
       <div class="row2">
         <div class="field"><label>Categoría</label>
-          <select name="categoria">
-            <option>Alquiler</option><option>Insumos</option><option>Servicios (luz/agua/internet)</option>
-            <option>Marketing</option><option>Otro</option>
-          </select>
+          <select name="categoria"><option>Alquiler</option><option>Insumos</option><option>Servicios (luz/agua/internet)</option><option>Marketing</option><option>Otro</option></select>
         </div>
-        <div class="field"><label>Monto</label><input type="number" step="0.01" name="monto" placeholder="0.00" required></div>
+        <div class="field"><label>Monto $</label><input type="number" step="0.01" name="monto" placeholder="0.00" required></div>
       </div>
       <div class="field"><label>Descripción (opcional)</label><input type="text" name="descripcion" placeholder="Detalle"></div>
       <button class="primary" type="submit">Guardar egreso</button>
@@ -303,17 +369,13 @@ function renderEgresos(main){
           <div class="sub">${m.fecha}${m.descripcion?' · '+m.descripcion:''}</div>
           <button class="del" data-id="${m.id}">Eliminar</button>
         </div>
-        <div class="right"><div class="amt expense">-${fmt(m.monto)}</div></div>
+        <div class="right"><div class="amt expense">-${amtStr(m.monto)}</div></div>
       </div>`).join('');
 
   document.getElementById('formEgreso').addEventListener('submit', async e=>{
     e.preventDefault();
     const f = new FormData(e.target);
-    movimientos.push({
-      id: uid(), type:'egreso',
-      fecha: f.get('fecha'), categoria: f.get('categoria'),
-      monto: parseFloat(f.get('monto')), descripcion: f.get('descripcion')||''
-    });
+    movimientos.push({ id: uid(), type:'egreso', fecha: f.get('fecha'), categoria: f.get('categoria'), monto: parseFloat(f.get('monto')), descripcion: f.get('descripcion')||'' });
     await saveMovimientos();
     e.target.reset();
     render();
@@ -333,9 +395,12 @@ function renderClientes(main){
       <h3>Nueva clienta</h3>
       <div class="row2">
         <div class="field"><label>Nombre</label><input type="text" name="nombre" required></div>
-        <div class="field"><label>Teléfono</label><input type="text" name="telefono" placeholder="0412-0000000"></div>
+        <div class="field"><label>Cédula</label><input type="text" name="cedula" placeholder="V-00000000"></div>
       </div>
-      <div class="field"><label>Notas (preferencias, alergias, etc.)</label><input type="text" name="notas"></div>
+      <div class="row2">
+        <div class="field"><label>Teléfono</label><input type="text" name="telefono" placeholder="0412-0000000"></div>
+        <div class="field"><label>Notas</label><input type="text" name="notas" placeholder="Preferencias, alergias..."></div>
+      </div>
       <button class="primary" type="submit">Guardar clienta</button>
     </form>
     <div class="section-title">Clientas registradas</div>
@@ -343,12 +408,13 @@ function renderClientes(main){
   `;
   document.getElementById('listaClientes').innerHTML = clientes.length===0 ? '<div class="empty">Aún no has registrado clientas</div>' :
     clientes.map(c=>{
-      const visitas = movimientos.filter(m=>m.type==='ingreso' && m.cliente && m.cliente.toLowerCase()===c.nombre.toLowerCase()).length;
+      const visitas = movimientos.filter(m=>m.type==='ingreso' && m.cliente && m.cliente.toLowerCase()===c.nombre.toLowerCase());
+      const totalGastado = visitas.reduce((s,m)=>s+m.monto,0);
       return `
       <div class="client-card">
         <div class="title">${c.nombre}</div>
-        <div class="sub">${c.telefono||'Sin teléfono'}${c.notas?' · '+c.notas:''}</div>
-        <div class="visits">${visitas} visita${visitas!==1?'s':''} registrada${visitas!==1?'s':''}</div>
+        <div class="sub">${c.cedula?('C.I. '+c.cedula+' · '):''}${c.telefono||'Sin teléfono'}${c.notas?' · '+c.notas:''}</div>
+        <div class="visits">${visitas.length} visita${visitas.length!==1?'s':''} · Total gastado: ${amtStr(totalGastado)}</div>
         <button class="del" data-id="${c.id}">Eliminar</button>
       </div>`;
     }).join('');
@@ -356,7 +422,7 @@ function renderClientes(main){
   document.getElementById('formCliente').addEventListener('submit', async e=>{
     e.preventDefault();
     const f = new FormData(e.target);
-    clientes.push({ id: uid(), nombre: f.get('nombre'), telefono: f.get('telefono')||'', notas: f.get('notas')||'' });
+    clientes.push({ id: uid(), nombre: f.get('nombre'), cedula: f.get('cedula')||'', telefono: f.get('telefono')||'', notas: f.get('notas')||'' });
     await saveClientes();
     e.target.reset();
     render();

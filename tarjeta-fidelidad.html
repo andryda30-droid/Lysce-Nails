@@ -85,6 +85,7 @@
   }
   .btn-stamp{ background:var(--rose); color:#fff; }
   .btn-reset{ background:var(--gold); color:#fff; }
+  .btn-delete{ background:#8a6f6a; color:#fff; }
   .note{ max-width:400px; font-size:12px; color:#a98f89; text-align:center; margin-top:16px; line-height:1.5; }
   .err{ max-width:400px; background:#FDEDEC; border:1px solid #E4A9A2; color:#8a2f26; padding:14px; border-radius:12px; font-size:13.5px; }
 </style>
@@ -238,6 +239,7 @@ function renderStaff(app){
         ${c.sellos >= REWARD_AT
           ? `<button class="btn-reset" data-tel="${c.telefono}" data-action="canjear">Canjear</button>`
           : `<button class="btn-stamp" data-tel="${c.telefono}" data-action="sellar">+ Sello</button>`}
+        <button class="btn-delete" data-tel="${c.telefono}" data-action="eliminar">Borrar</button>
       </div>
     </div>
   `).join('');
@@ -248,6 +250,10 @@ function renderStaff(app){
       if(!c) return;
       if(btn.dataset.action==='sellar'){ c.sellos = Math.min(REWARD_AT, c.sellos+1); }
       if(btn.dataset.action==='canjear'){ c.sellos = 0; c.canjes = (c.canjes||0)+1; }
+      if(btn.dataset.action==='eliminar'){
+        if(!confirm('¿Borrar la tarjeta de '+c.nombre+'? Esto no se puede deshacer.')) return;
+        clientes = clientes.filter(x=>x.telefono!==c.telefono);
+      }
       await save();
       render();
     });
