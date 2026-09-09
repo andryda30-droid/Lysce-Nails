@@ -66,7 +66,7 @@
   .list-item .right .amt{ font-family:'Fraunces',serif; font-size:15px; line-height:1.3;}
   .amt.income{ color:var(--ok); }
   .amt.expense{ color:var(--bad); }
-  .del{ background:none; border:none; color:#c79a94; font-size:12px; cursor:pointer; margin-top:4px; padding:0; }
+  .del{ background:none; border:none; color:#c79a94; font-size:12px; cursor:pointer; margin-top:4px; margin-right:12px; padding:0; }
 
   .client-card{ background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-bottom:8px; }
   .client-card .title{ font-weight:700; font-size:14.5px; }
@@ -320,6 +320,7 @@ function renderIngresos(main){
           <div class="title">${m.cliente || 'Sin nombre'}</div>
           <div class="sub">${m.fecha} · ${m.trabajadora}${m.cedula?' · C.I. '+m.cedula:''}<br>${servicioLabel(m)}</div>
           <button class="del" data-id="${m.id}">Eliminar</button>
+          <button class="del fix-tasa" data-id="${m.id}">Corregir tasa</button>
         </div>
         <div class="right"><div class="amt income">+${lineAmt(m.monto, movBs(m))}</div></div>
       </div>`).join('');
@@ -349,9 +350,22 @@ function renderIngresos(main){
     e.target.reset();
     render();
   });
-  document.querySelectorAll('#listaIngresos .del').forEach(btn=>{
+  document.querySelectorAll('#listaIngresos .del[data-id]:not(.fix-tasa)').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
       movimientos = movimientos.filter(m=>m.id!==btn.dataset.id);
+      await saveMovimientos();
+      render();
+    });
+  });
+  document.querySelectorAll('#listaIngresos .fix-tasa').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const m = movimientos.find(x=>x.id===btn.dataset.id);
+      if(!m) return;
+      const val = prompt('¿Cuál era la tasa (Bs por $1) el día de este ingreso?', m.tasaBs || '');
+      if(val===null) return;
+      const num = parseFloat(val);
+      if(!num || num<=0){ alert('Tasa inválida'); return; }
+      m.tasaBs = num;
       await saveMovimientos();
       render();
     });
@@ -383,6 +397,7 @@ function renderEgresos(main){
           <div class="title">${m.categoria}</div>
           <div class="sub">${m.fecha}${m.descripcion?' · '+m.descripcion:''}</div>
           <button class="del" data-id="${m.id}">Eliminar</button>
+          <button class="del fix-tasa-eg" data-id="${m.id}">Corregir tasa</button>
         </div>
         <div class="right"><div class="amt expense">-${lineAmt(m.monto, movBs(m))}</div></div>
       </div>`).join('');
@@ -395,9 +410,22 @@ function renderEgresos(main){
     e.target.reset();
     render();
   });
-  document.querySelectorAll('#listaEgresos .del').forEach(btn=>{
+  document.querySelectorAll('#listaEgresos .del[data-id]:not(.fix-tasa-eg)').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
       movimientos = movimientos.filter(m=>m.id!==btn.dataset.id);
+      await saveMovimientos();
+      render();
+    });
+  });
+  document.querySelectorAll('#listaEgresos .fix-tasa-eg').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const m = movimientos.find(x=>x.id===btn.dataset.id);
+      if(!m) return;
+      const val = prompt('¿Cuál era la tasa (Bs por $1) el día de este egreso?', m.tasaBs || '');
+      if(val===null) return;
+      const num = parseFloat(val);
+      if(!num || num<=0){ alert('Tasa inválida'); return; }
+      m.tasaBs = num;
       await saveMovimientos();
       render();
     });
