@@ -130,6 +130,8 @@ async function saveTasa(){ await fbPut('config', { tasaBs }); }
 function fmtUSD(n){ return '$' + Number(n).toFixed(2); }
 function fmtBsAmt(n){ return 'Bs ' + (Number(n)*tasaBs).toLocaleString('es-VE',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 function amtStr(n){ return fmtUSD(n) + (tasaBs>0 ? ' <br><span style="font-size:12px;opacity:.75;">'+fmtBsAmt(n)+'</span>' : ''); }
+function movBs(m){ return m.monto * (m.tasaBs || tasaBs); }
+function lineAmt(usd, bs){ return fmtUSD(usd) + (bs>0 ? ' <br><span style="font-size:12px;opacity:.75;">Bs ' + bs.toLocaleString('es-VE',{minimumFractionDigits:2,maximumFractionDigits:2}) + '</span>' : ''); }
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 function findCliente(nombre){ return clientes.find(c=>c.nombre.toLowerCase()===String(nombre||'').toLowerCase()); }
 
@@ -158,6 +160,7 @@ function tasaBoxHtml(){
         <input type="number" step="0.01" id="tasaInput" value="${tasaBs||''}" placeholder="Ej. 40.50">
         <button id="guardarTasaBtn" type="button">Guardar</button>
       </div>
+      <div style="font-size:11.5px; color:#a98f89; margin-top:8px;">Cada movimiento guarda la tasa del día en que lo registraste — cambiar esto solo afecta lo nuevo, no reescribe lo ya guardado.</div>
     </div>`;
 }
 function bindTasaBox(){
@@ -185,26 +188,38 @@ function balancesPorMes(){
   movimientos.forEach(m=>{
     if(!m.fecha) return;
     const key = m.fecha.slice(0,7);
-    if(!map[key]) map[key] = { ingresos:0, egresos:0 };
-    if(m.type==='ingreso') map[key].ingresos += m.monto;
-    else map[key].egresos += m.monto;
+    if(!map[key]) map[key] = { ingresos:0, egresos:0, ingresosBs:0, egresosBs:0 };
+    if(m.type==='ingreso'){ map[key].ingresos += m.monto; map[key].ingresosBs += movBs(m); }
+    else { map[key].egresos += m.monto; map[key].egresosBs += movBs(m); }
   });
-  return Object.keys(map).sort().reverse().map(key=>({ key, ...map[key], balance: map[key].ingresos - map[key].egresos }));
+  return Object.keys(map).sort().reverse().map(key=>({
+    key, ...map[key],
+    balance: map[key].ingresos - map[key].egresos,
+    balanceBs: map[key].ingresosBs - map[key].egresosBs
+  }));
 }
 
 function renderResumen(main){
-  const totalIn = movimientos.filter(m=>m.type==='ingreso').reduce((s,m)=>s+m.monto,0);
-  const totalOut = movimientos.filter(m=>m.type==='egreso').reduce((s,m)=>s+m.monto,0);
+  const ingresosArr = movimientos.filter(m=>m.type==='ingreso');
+  const egresosArr = movimientos.filter(m=>m.type==='egreso');
+  const totalIn = ingresosArr.reduce((s,m)=>s+m.monto,0);
+  const totalInBs = ingresosArr.reduce((s,m)=>s+movBs(m),0);
+  const totalOut = egresosArr.reduce((s,m)=>s+m.monto,0);
+  const totalOutBs = egresosArr.reduce((s,m)=>s+movBs(m),0);
   const balance = totalIn - totalOut;
-  const porTrabajadora = WORKERS.map(w=>({ nombre:w, total: movimientos.filter(m=>m.type==='ingreso' && m.trabajadora===w).reduce((s,m)=>s+m.monto,0) }));
+  const balanceBs = totalInBs - totalOutBs;
+  const porTrabajadora = WORKERS.map(w=>{
+    const arr = ingresosArr.filter(m=>m.trabajadora===w);
+    return { nombre:w, total: arr.reduce((s,m)=>s+m.monto,0), totalBs: arr.reduce((s,m)=>s+movBs(m),0) };
+  });
   const maxW = Math.max(1, ...porTrabajadora.map(w=>w.total));
 
   main.innerHTML = `
     ${tasaBoxHtml()}
     <div class="grid-stats">
-      <div class="stat ok"><div class="label">Ingresos totales</div><div class="value">${amtStr(totalIn)}</div></div>
-      <div class="stat bad"><div class="label">Egresos totales</div><div class="value">${amtStr(totalOut)}</div></div>
-      <div class="stat balance" style="grid-column:1/3;"><div class="label">Balance neto</div><div class="value">${amtStr(balance)}</div></div>
+      <div class="stat ok"><div class="label">Ingresos totales</div><div class="value">${lineAmt(totalIn, totalInBs)}</div></div>
+      <div class="stat bad"><div class="label">Egresos totales</div><div class="value">${lineAmt(totalOut, totalOutBs)}</div></div>
+      <div class="stat balance" style="grid-column:1/3;"><div class="label">Balance neto</div><div class="value">${lineAmt(balance, balanceBs)}</div></div>
     </div>
     <div class="section-title">Ingresos por trabajadora</div>
     ${porTrabajadora.map(w=>`
@@ -213,7 +228,7 @@ function renderResumen(main){
           <div class="name">${w.nombre}</div>
           <div class="bar-bg" style="width:140px;"><div class="bar-fill" style="width:${(w.total/maxW*100)||0}%"></div></div>
         </div>
-        <div class="amt">${amtStr(w.total)}</div>
+        <div class="amt">${lineAmt(w.total, w.totalBs)}</div>
       </div>`).join('')}
     <div class="section-title">Balance mensual</div>
     ${balancesPorMes().length===0 ? '<div class="empty">Aún no hay movimientos para calcular un balance</div>' :
@@ -223,7 +238,7 @@ function renderResumen(main){
           <div class="title">${monthLabel(b.key)}</div>
           <div class="sub">Ingresos: ${fmtUSD(b.ingresos)} · Egresos: ${fmtUSD(b.egresos)}</div>
         </div>
-        <div class="right"><div class="amt ${b.balance>=0?'income':'expense'}">${amtStr(b.balance)}</div></div>
+        <div class="right"><div class="amt ${b.balance>=0?'income':'expense'}">${lineAmt(b.balance, b.balanceBs)}</div></div>
       </div>`).join('')}
     <div class="section-title">Movimientos recientes</div>
     ${movimientos.length===0 ? '<div class="empty">Aún no hay movimientos registrados</div>' :
@@ -233,7 +248,7 @@ function renderResumen(main){
           <div class="title">${m.type==='ingreso' ? (m.cliente||'Ingreso') : (m.categoria||'Egreso')}</div>
           <div class="sub">${m.fecha}${m.type==='ingreso' ? ' · '+m.trabajadora+' · '+servicioLabel(m) : (m.descripcion?' · '+m.descripcion:'')}</div>
         </div>
-        <div class="right"><div class="amt ${m.type==='ingreso'?'income':'expense'}">${m.type==='ingreso'?'+':'-'}${amtStr(m.monto)}</div></div>
+        <div class="right"><div class="amt ${m.type==='ingreso'?'income':'expense'}">${m.type==='ingreso'?'+':'-'}${lineAmt(m.monto, movBs(m))}</div></div>
       </div>`).join('')}
   `;
   bindTasaBox();
@@ -306,7 +321,7 @@ function renderIngresos(main){
           <div class="sub">${m.fecha} · ${m.trabajadora}${m.cedula?' · C.I. '+m.cedula:''}<br>${servicioLabel(m)}</div>
           <button class="del" data-id="${m.id}">Eliminar</button>
         </div>
-        <div class="right"><div class="amt income">+${amtStr(m.monto)}</div></div>
+        <div class="right"><div class="amt income">+${lineAmt(m.monto, movBs(m))}</div></div>
       </div>`).join('');
 
   document.getElementById('formIngreso').addEventListener('submit', async e=>{
@@ -324,7 +339,7 @@ function renderIngresos(main){
     if(servicios.length===0){ alert('Agrega al menos un servicio con monto'); return; }
     const total = servicios.reduce((s,x)=>s+x.monto,0);
 
-    movimientos.push({ id: uid(), type:'ingreso', fecha: f.get('fecha'), cliente: nombre, cedula, trabajadora: f.get('trabajadora'), servicios, monto: total });
+    movimientos.push({ id: uid(), type:'ingreso', fecha: f.get('fecha'), cliente: nombre, cedula, trabajadora: f.get('trabajadora'), servicios, monto: total, tasaBs });
     await saveMovimientos();
 
     let cli = findCliente(nombre);
@@ -369,13 +384,13 @@ function renderEgresos(main){
           <div class="sub">${m.fecha}${m.descripcion?' · '+m.descripcion:''}</div>
           <button class="del" data-id="${m.id}">Eliminar</button>
         </div>
-        <div class="right"><div class="amt expense">-${amtStr(m.monto)}</div></div>
+        <div class="right"><div class="amt expense">-${lineAmt(m.monto, movBs(m))}</div></div>
       </div>`).join('');
 
   document.getElementById('formEgreso').addEventListener('submit', async e=>{
     e.preventDefault();
     const f = new FormData(e.target);
-    movimientos.push({ id: uid(), type:'egreso', fecha: f.get('fecha'), categoria: f.get('categoria'), monto: parseFloat(f.get('monto')), descripcion: f.get('descripcion')||'' });
+    movimientos.push({ id: uid(), type:'egreso', fecha: f.get('fecha'), categoria: f.get('categoria'), monto: parseFloat(f.get('monto')), descripcion: f.get('descripcion')||'', tasaBs });
     await saveMovimientos();
     e.target.reset();
     render();
@@ -410,11 +425,12 @@ function renderClientes(main){
     clientes.map(c=>{
       const visitas = movimientos.filter(m=>m.type==='ingreso' && m.cliente && m.cliente.toLowerCase()===c.nombre.toLowerCase());
       const totalGastado = visitas.reduce((s,m)=>s+m.monto,0);
+      const totalGastadoBs = visitas.reduce((s,m)=>s+movBs(m),0);
       return `
       <div class="client-card">
         <div class="title">${c.nombre}</div>
         <div class="sub">${c.cedula?('C.I. '+c.cedula+' · '):''}${c.telefono||'Sin teléfono'}${c.notas?' · '+c.notas:''}</div>
-        <div class="visits">${visitas.length} visita${visitas.length!==1?'s':''} · Total gastado: ${amtStr(totalGastado)}</div>
+        <div class="visits">${visitas.length} visita${visitas.length!==1?'s':''} · Total gastado: ${lineAmt(totalGastado, totalGastadoBs)}</div>
         <button class="del" data-id="${c.id}">Eliminar</button>
       </div>`;
     }).join('');
